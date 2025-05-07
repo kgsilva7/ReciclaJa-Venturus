@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReciclaJá - Plataforma Inteligente de Reciclagem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .logo-text {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.2) 100%);
+        }
+        
+        .recycle-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cta-button {
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+        
+        .api-endpoint {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .tech-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin: 0 auto 15px;
+        }
+        
+        .swagger-ui {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-container {
+            position: relative;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .legend-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .location-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .location-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <div class="bg-green-500 p-2 rounded-full">
+                    <i class="fas fa-recycle text-white text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold logo-text">ReciclaJá</h1>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="text-gray-700 hover:text-green-500 font-medium">Início</a>
+                <a href="#about" class="text-gray-700 hover:text-green-500 font-medium">Sobre</a>
+                <a href="#locations" class="text-gray-700 hover:text-green-500 font-medium">Localizações</a>
+                <a href="#api" class="text-gray-700 hover:text-green-500 font-medium">API</a>
+                <a href="#tech" class="text-gray-700 hover:text-green-500 font-medium">Tecnologias</a>
+                <a href="#team" class="text-gray-700 hover:text-green-500 font-medium">Equipe</a>
+            </nav>
+            
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-gray-700" id="mobile-menu-button">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            
+            <!-- CTA Button -->
+            <div class="hidden md:block">
+                <a href="#api-docs" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition">
+                    API Docs
+                </a>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white py-2 px-4 shadow-md" id="mobile-menu">
+            <a href="#home" class="block py-2 text-gray-700 hover:text-green-500">Início</a>
+            <a href="#about" class="block py-2 text-gray-700 hover:text-green-500">Sobre</a>
+            <a href="#locations" class="block py-2 text-gray-700 hover:text-green-500">Localizações</a>
+            <a href="#api" class="block py-2 text-gray-700 hover:text-green-500">API</a>
+            <a href="#tech" class="block py-2 text-gray-700 hover:text-green-500">Tecnologias</a>
+            <a href="#team" class="block py-2 text-gray-700 hover:text-green-500">Equipe</a>
+            <a href="#api-docs" class="block py-2 text-green-500 font-medium">API Docs</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient py-16 md:py-24" id="home">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                    Plataforma Inteligente de <span class="text-green-500">Reciclagem</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    <span class="font-semibold text-green-600">"Conectando geradores de resíduos a coletores especializados"</span>
+                    Nossa solução tecnológica otimiza todo o processo de reciclagem através de uma API robusta e um ecossistema integrado.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#api-docs" class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-medium cta-button text-center">
+                        Ver Documentação API
+                    </a>
+                    <a href="#demo" class="border-2 border-green-500 text-green-500 hover:bg-green-50 px-8 py-3 rounded-full font-medium cta-button text-center">
+                        Ver Demonstração
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="relative">
+                    <div class="w-64 h-64 md:w-80 md:h-80 bg-green-100 rounded-full flex items-center justify-center recycle-icon">
+                        <i class="fas fa-recycle text-green-500 text-8xl md:text-9xl"></i>
+                    </div>
+                    <div class="absolute -bottom-5 -right-5 bg-white p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 p-2 rounded-full mr-3">
+                                <i class="fas fa-database text-yellow-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold">+50.000 requisições</p>
+                                <p class="text-xs text-gray-500">processadas diariamente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-16 bg-white" id="about">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Sobre o Projeto</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    ReciclaJá é uma startup de impacto ambiental que desenvolveu uma plataforma tecnológica para conectar geradores de resíduos
+                    recicláveis a coletores especializados, otimizando todo o processo de coleta seletiva através de inteligência de dados.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-green-600">Problema que Resolvemos</h3>
+                    <p class="text-gray-600 mb-6">
+                        No Brasil, apenas 4% dos resíduos sólidos urbanos são reciclados de forma adequada. A falta de infraestrutura,
+                        informação e incentivos econômicos são as principais barreiras para aumentar este índice.
+                    </p>
+                    
+                    <h3 class="text-xl font-semibold mb-4 text-green-600">Nossa Solução</h3>
+                    <p class="text-gray-600 mb-6">
+                        Desenvolvemos um ecossistema completo que inclui:
+                    </p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>API para integração com sistemas municipais e empresas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Aplicativo para agendamento de coletas por cidadãos</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Plataforma de gestão para cooperativas de catadores</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                            <span>Sistema de pontuação e benefícios para usuários</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-gray-50 p-8 rounded-xl border border-gray-200">
+                    <h3 class="text-xl font-semibold mb-6 text-center text-green-600">Impacto Esperado</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <div class="text-3xl font-bold text-green-500 mb-2">+80%</div>
+                            <div class="text-sm text-gray-600">Aumento na taxa de reciclagem</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <div class="text-3xl font-bold text-green-500 mb-2">+500</div>
+                            <div class="text-sm text-gray-600">Cooperativas integradas</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <div class="text-3xl font-bold text-green-500 mb-2">+1M</div>
+                            <div class="text-sm text-gray-600">Usuários ativos</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+                            <div class="text-3xl font-bold text-green-500 mb-2">+10 mil</div>
+                            <div class="text-sm text-gray-600">Toneladas recicladas/mês</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Locations Map Section -->
+    <section class="py-16 bg-gray-50" id="locations">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Nossa Rede de Coleta</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Explore nosso mapa interativo com pontos de coleta, cooperativas parceiras e ecopontos disponíveis em sua região.
+                </p>
+            </div>
+            
+            <div class="map-container mb-8">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <div class="flex space-x-2">
+                        <button id="filter-all" class="px-3 py-1 bg-green-500 text-white rounded text-sm font-medium">Todos</button>
+                        <button id="filter-collect" class="px-3 py-1 bg-blue-500 text-white rounded text-sm font-medium">Pontos de Coleta</button>
+                        <button id="filter-coop" class="px-3 py-1 bg-purple-500 text-white rounded text-sm font-medium">Cooperativas</button>
+                        <button id="filter-ecopoint" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm font-medium">Ecopontos</button>
+                    </div>
+                </div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-icon bg-green-500"></div>
+                        <span>Sua localização</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon bg-blue-500"></div>
+                        <span>Pontos de coleta</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon bg-purple-500"></div>
+                        <span>Cooperativas</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon bg-yellow-500"></div>
+                        <span>Ecopontos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Location Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden location-card">
+                    <div class="h-40 bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt text-green-500 text-4xl"></i>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Ecoponto Vila Mariana</h3>
+                        <p class="text-gray-600 text-sm mb-2">Rua Domingos de Morais, 256</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>Seg-Sex: 8h-18h | Sáb: 9h-13h</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Plástico</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Vidro</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Metal</span>
+                        </div>
+                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded text-sm font-medium">
+                            Ver no mapa
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Location Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden location-card">
+                    <div class="h-40 bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-users text-purple-500 text-4xl"></i>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Cooperativa Recicla Vida</h3>
+                        <p class="text-gray-600 text-sm mb-2">Av. Paulista, 900 - Bela Vista</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>Seg-Sáb: 7h-19h</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Papel</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Plástico</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Eletrônicos</span>
+                        </div>
+                        <button class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded text-sm font-medium">
+                            Ver no mapa
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Location Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden location-card">
+                    <div class="h-40 bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-trash-alt text-blue-500 text-4xl"></i>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-1">Ponto de Coleta - Shopping Ibirapuera</h3>
+                        <p class="text-gray-600 text-sm mb-2">Av. Ibirapuera, 3103 - Moema</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>Diariamente: 10h-22h</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Pilhas</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Baterias</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Óleo</span>
+                        </div>
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-sm font-medium">
+                            Ver no mapa
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <a href="#" class="inline-block border-2 border-green-500 text-green-500 hover:bg-green-50 px-6 py-3 rounded-full font-medium">
+                    <i class="fas fa-plus mr-2"></i> Cadastrar novo ponto de coleta
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section class="py-16 bg-white" id="api">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Nossa API</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    A API ReciclaJá fornece todas as funcionalidades necessárias para integrar sistemas de gestão de resíduos,
+                    aplicativos móveis e plataformas de cooperativas em um ecossistema unificado.
+                </p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl shadow-sm overflow-hidden mb-12">
+                <div class="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-lock text-blue-500"></i>
+                            </div>
+                            <h3 class="font-semibold">Autenticação Segura</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm">
+                            JWT Token com roles para diferentes tipos de usuários (cidadãos, coletores, administradores).
+                        </p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-green-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-route text-green-500"></i>
+                            </div>
+                            <h3 class="font-semibold">RESTful Endpoints</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm">
+                            Padrão REST com status HTTP semânticos e respostas em JSON.
+                        </p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                                <i class="fas fa-bolt text-purple-500"></i>
+                            </div>
+                            <h3 class="font-semibold">Webhooks</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm">
+                            Notificações em tempo real para atualizações de status de coleta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="text-xl font-semibold mb-6 text-green-600">Principais Endpoints</h3>
+            
+            <div class="space-y-6">
+                <!-- Auth Endpoint -->
+                <div class="api-endpoint">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded mr-2">POST</span>
+                        <span class="font-mono text-sm">/api/auth/login</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">Autenticação de usuários e geração de JWT token.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">email: string</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">password: string</span>
+                    </div>
+                </div>
+                
+                <!-- Collection Endpoint -->
+                <div class="api-endpoint">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded mr-2">GET</span>
+                        <span class="font-mono text-sm">/api/collections</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">Lista todas as coletas agendadas (requer autenticação).</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">status: string</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">date: string</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">limit: number</span>
+                    </div>
+                </div>
+                
+                <!-- Schedule Endpoint -->
+                <div class="api-endpoint">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded mr-2">POST</span>
+                        <span class="font-mono text-sm">/api/collections/schedule</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">Agenda uma nova coleta de materiais recicláveis.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">materials: Material[]</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">address: Address</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">preferredDate: string</span>
+                    </div>
+                </div>
+                
+                <!-- Materials Endpoint -->
+                <div class="api-endpoint">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded mr-2">GET</span>
+                        <span class="font-mono text-sm">/api/materials</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">Lista todos os materiais recicláveis aceitos pelo sistema.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">type: string</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">pointsPerKg: number</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Documentation Section -->
+    <section class="py-16 bg-gray-50" id="api-docs">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Documentação da API</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Explore nossa API completa através da documentação interativa gerada com Swagger.
+                    Teste os endpoints diretamente da interface.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl">
+                <div class="swagger-ui" id="swagger-ui-container">
+                    <!-- Swagger UI will be loaded here by JavaScript -->
+                    <div class="text-center py-10">
+                        <i class="fas fa-spinner fa-spin text-green-500 text-4xl mb-4"></i>
+                        <p class="text-gray-600">Carregando documentação da API...</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-download mr-2"></i> Baixar Postman Collection
+                    </a>
+                    <a href="#" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-code mr-2"></i> Ver Exemplos de Código
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Stack Section -->
+    <section class="py-16 bg-white" id="tech">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Tecnologias Utilizadas</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Nossa stack tecnológica foi cuidadosamente selecionada para garantir desempenho,
+                    segurança e escalabilidade para a plataforma ReciclaJá.
+                </p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Node.js -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-green-100 mx-auto">
+                        <i class="fab fa-node-js text-green-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Node.js</h3>
+                    <p class="text-sm text-gray-600">
+                        Ambiente de execução JavaScript para construir a API backend de alta performance.
+                    </p>
+                </div>
+                
+                <!-- Express -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-gray-100 mx-auto">
+                        <i class="fas fa-server text-gray-600 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Express.js</h3>
+                    <p class="text-sm text-gray-600">
+                        Framework web para Node.js que simplifica a criação de endpoints RESTful.
+                    </p>
+                </div>
+                
+                <!-- PostgreSQL -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-blue-100 mx-auto">
+                        <i class="fas fa-database text-blue-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">PostgreSQL</h3>
+                    <p class="text-sm text-gray-600">
+                        Banco de dados relacional robusto para armazenar todos os dados da plataforma.
+                    </p>
+                </div>
+                
+                <!-- Prisma -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-purple-100 mx-auto">
+                        <i class="fas fa-shield-alt text-purple-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Prisma ORM</h3>
+                    <p class="text-sm text-gray-600">
+                        ORM moderno para acesso seguro e produtivo ao banco de dados.
+                    </p>
+                </div>
+                
+                <!-- JWT -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-yellow-100 mx-auto">
+                        <i class="fas fa-key text-yellow-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">JWT</h3>
+                    <p class="text-sm text-gray-600">
+                        Autenticação segura com JSON Web Tokens e controle de acesso por roles.
+                    </p>
+                </div>
+                
+                <!-- Swagger -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-green-100 mx-auto">
+                        <i class="fas fa-file-alt text-green-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Swagger</h3>
+                    <p class="text-sm text-gray-600">
+                        Documentação interativa da API para facilitar a integração de desenvolvedores.
+                    </p>
+                </div>
+                
+                <!-- Jest -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-red-100 mx-auto">
+                        <i class="fas fa-vial text-red-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Jest</h3>
+                    <p class="text-sm text-gray-600">
+                        Framework de testes para garantir a qualidade e confiabilidade do código.
+                    </p>
+                </div>
+                
+                <!-- Docker -->
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="tech-icon bg-blue-100 mx-auto">
+                        <i class="fab fa-docker text-blue-500 text-3xl"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Docker</h3>
+                    <p class="text-sm text-gray-600">
+                        Containerização para deploy consistente em qualquer ambiente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-16 bg-gray-50" id="team">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Nossa Equipe</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Conheça o time multidisciplinar por trás da ReciclaJá, unindo expertise técnica
+                    com paixão por sustentabilidade.
+                </p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Team Member 1 -->
+                <div class="bg-white p-6 rounded-xl text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-user text-green-500 text-5xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Felipe Tesser</h3>
+                    <p class="text-green-600 text-sm mb-2">CEO & Fundador</p>
+                    <p class="text-gray-600 text-sm">
+                        Especialista em sustentabilidade com 10+ anos de experiência em gestão de resíduos.
+                    </p>
+                    <div class="flex justify-center space-x-3 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 2 -->
+                <div class="bg-white p-6 rounded-xl text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-user text-blue-500 text-5xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Igor Sales</h3>
+                    <p class="text-green-600 text-sm mb-2">CTO</p>
+                    <p class="text-gray-600 text-sm">
+                        Engenheiro de software full-stack com especialização em arquitetura de sistemas escaláveis.
+                    </p>
+                    <div class="flex justify-center space-x-3 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 3 -->
+                <div class="bg-white p-6 rounded-xl text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-user text-purple-500 text-5xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Higor Mota</h3>
+                    <p class="text-green-600 text-sm mb-2">Product Manager</p>
+                    <p class="text-gray-600 text-sm">
+                        Especialista em UX e gestão de produtos digitais com foco em impacto social.
+                    </p>
+                    <div class="flex justify-center space-x-3 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 4 -->
+                <div class="bg-white p-6 rounded-xl text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-user text-yellow-500 text-5xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg">Gustavo Alexandre</h3>
+                    <p class="text-green-600 text-sm mb-2">DevOps Engineer</p>
+                    <p class="text-gray-600 text-sm">
+                        Expert em infraestrutura cloud, CI/CD e monitoramento de sistemas em produção.
+                    </p>
+                    <div class="flex justify-center space-x-3 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-green-500">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <h3 class="text-xl font-semibold mb-4">Trabalhe Conosco</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+                    Estamos sempre buscando talentos apaixonados por tecnologia e sustentabilidade.
+                    Veja nossas vagas abertas e faça parte do time!
+                </p>
+                <a href="#" class="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium">
+                    Ver Vagas Disponíveis
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="py-16 bg-white" id="demo">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Demonstração da API</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Veja como é simples integrar sua aplicação com a API ReciclaJá.
+                    Teste nossos endpoints diretamente no Insomnia.
+                </p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl shadow-sm overflow-hidden">
+                <div class="grid md:grid-cols-2 gap-0">
+                    <div class="p-8 border-b md:border-b-0 md:border-r border-gray-200">
+                        <h3 class="text-xl font-semibold mb-4 text-green-600">Teste no Insomnia</h3>
+                        <p class="text-gray-600 mb-6">
+                            Importe nossa collection no Insomnia para testar todos os endpoints
+                            com dados reais em um ambiente sandbox.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Autenticação Pronta</h4>
+                                    <p class="text-sm text-gray-600">Já configurada com credenciais de teste</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Exemplos de Payload</h4>
+                                    <p class="text-sm text-gray-600">Modelos prontos para cada endpoint</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Ambiente Sandbox</h4>
+                                    <p class="text-sm text-gray-600">Dados fictícios que simulam o ambiente real</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="mt-6 inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium">
+                            <i class="fas fa-download mr-2"></i> Baixar Collection
+                        </a>
+                    </div>
+                    
+                    <div class="p-8">
+                        <h3 class="text-xl font-semibold mb-4 text-green-600">Exemplo de Uso</h3>
+                        <div class="bg-gray-800 rounded-lg p-4 overflow-x-auto">
+                            <pre class="text-green-400 text-sm">
+<span class="text-gray-400">// Exemplo de requisição para agendar coleta</span>
+<span class="text-blue-400">const</span> <span class="text-white">response</span> = <span class="text-blue-400">await</span> <span class="text-yellow-300">fetch</span>(<span class="text-green-300">'https://api.reciclaja.com/v1/collections/schedule'</span>, {
+  <span class="text-blue-400">method</span>: <span class="text-green-300">'POST'</span>,
+  <span class="text-blue-400">headers</span>: {
+    <span class="text-green-300">'Content-Type'</span>: <span class="text-green-300">'application/json'</span>,
+    <span class="text-green-300">'Authorization'</span>: <span class="text-green-300">`Bearer ${token}`</span>
+  },
+  <span class="text-blue-400">body</span>: <span class="text-yellow-300">JSON</span>.<span class="text-yellow-300">stringify</span>({
+    <span class="text-blue-400">materials</span>: [
+      { <span class="text-blue-400">type</span>: <span class="text-green-300">"plastic"</span>, <span class="text-blue-400">quantity</span>: <span class="text-purple-300">2.5</span> },
+      { <span class="text-blue-400">type</span>: <span class="text-green-300">"paper"</span>, <span class="text-blue-400">quantity</span>: <span class="text-purple-300">1.2</span> }
+    ],
+    <span class="text-blue-400">address</span>: {
+      <span class="text-blue-400">street</span>: <span class="text-green-300">"Rua das Flores"</span>,
+      <span class="text-blue-400">number</span>: <span class="text-green-300">"123"</span>,
+      <span class="text-blue-400">city</span>: <span class="text-green-300">"São Paulo"</span>
+    },
+    <span class="text-blue-400">preferredDate</span>: <span class="text-green-300">"2023-11-15"</span>
+  })
+});
+
+<span class="text-gray-400">// Resposta da API</span>
+<span class="text-blue-400">const</span> <span class="text-white">data</span> = <span class="text-blue-400">await</span> <span class="text-white">response</span>.<span class="text-yellow-300">json</span>();
+<span class="text-yellow-300">console</span>.<span class="text-yellow-300">log</span>(<span class="text-white">data</span>);</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="py-16 bg-green-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Pronto para integrar com a ReciclaJá?</h2>
+            <p class="text-lg mb-8 max-w-2xl mx-auto">
+                Nossa API está pronta para conectar seu sistema ou aplicativo ao ecossistema
+                de reciclagem mais completo do mercado.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#api-docs" class="bg-white text-green-600 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold cta-button">
+                    Documentação Completa
+                </a>
+                <a href="#" class="border-2 border-white text-white hover:bg-green-700 px-8 py-3 rounded-full font-semibold cta-button">
+                    Fale com nosso team
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Logo and Info -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="bg-green-500 p-2 rounded-full">
+                            <i class="fas fa-recycle text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">ReciclaJá</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Tecnologia a serviço da sustentabilidade.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- API Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">API ReciclaJá</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#api-docs" class="text-gray-400 hover:text-white">Documentação</a></li>
+                        <li><a href="#demo" class="text-gray-400 hover:text-white">Demonstração</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Changelog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Status</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Termos de Uso</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Cookies</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">LGPD</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contato</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>
+                            <a href="mailto:api@reciclaja.com" class="text-gray-400 hover:text-white">api@reciclaja.com</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-headset mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">Suporte 24/7</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">São Paulo - SP, Brasil</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 ReciclaJá API. Todos os direitos reservados.</p>
+                <p class="mt-2 text-sm">CNPJ: 12.345.678/0001-99 • Inscrição Estadual: 123.456.789.112</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Animate recycle icon
+        const icon = document.querySelector('.recycle-icon');
+        
+        function animateIcon() {
+            icon.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                icon.style.transform = 'rotate(0deg)';
+            }, 1000);
+        }
+        
+        // Rotate icon every 5 seconds
+        setInterval(animateIcon, 5000);
+        
+        // This would be replaced with actual Swagger UI initialization in a real project
+        // For demo purposes, we'll simulate loading
+        setTimeout(() => {
+            const swaggerContainer = document.getElementById('swagger-ui-container');
+            swaggerContainer.innerHTML = `
+                <div class="p-4 text-center">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Documentação da API</h3>
+                    <p class="text-gray-600 mb-4">A documentação Swagger UI seria carregada aqui em um ambiente real.</p>
+                    <p class="text-sm text-gray-500">Para fins de demonstração, estamos simulando o carregamento.</p>
+                </div>
+            `;
+        }, 2000);
+
+        // Initialize Google Maps
+        function initMap() {
+            // Default coordinates (São Paulo)
+            const defaultLocation = { lat: -23.5505, lng: -46.6333 };
+            
+            // Create map
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: defaultLocation,
+                styles: [
+                    {
+                        "featureType": "administrative",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#111111"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "color": "#f2f2f2"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": -100
+                            },
+                            {
+                                "lightness": 45
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "color": "#c9e8f9"
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    }
+                ]
+            });
+            
+            // Try HTML5 geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Add user location marker
+                        new google.maps.Marker({
+                            position: userLocation,
+                            map: map,
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                scale: 8,
+                                fillColor: "#2ecc71",
+                                fillOpacity: 1,
+                                strokeWeight: 2,
+                                strokeColor: "#ffffff"
+                            },
+                            title: "Sua localização"
+                        });
+                        
+                        // Center map on user location
+                        map.setCenter(userLocation);
+                    },
+                    () => {
+                        // Handle location error by using default location
+                        handleLocationError(true, map.getCenter());
+                    }
+                );
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, map.getCenter());
+            }
+            
+            // Sample locations data
+            const locations = [
+                {
+                    position: { lat: -23.5687, lng: -46.6493 },
+                    type: "collect",
+                    title: "Ponto de Coleta - Shopping Ibirapuera",
+                    address: "Av. Ibirapuera, 3103 - Moema",
+                    materials: ["Pilhas", "Baterias", "Óleo"]
+                },
+                {
+                    position: { lat: -23.5614, lng: -46.6559 },
+                    type: "coop",
+                    title: "Cooperativa Recicla Vida",
+                    address: "Av. Paulista, 900 - Bela Vista",
+                    materials: ["Papel", "Plástico", "Eletrônicos"]
+                },
+                {
+                    position: { lat: -23.5872, lng: -46.6586 },
+                    type: "ecopoint",
+                    title: "Ecoponto Vila Mariana",
+                    address: "Rua Domingos de Morais, 256",
+                    materials: ["Plástico", "Vidro", "Metal"]
+                },
+                {
+                    position: { lat: -23.5435, lng: -46.6369 },
+                    type: "collect",
+                    title: "Ponto de Coleta - Parque Ibirapuera",
+                    address: "Av. Pedro Álvares Cabral - Ibirapuera",
+                    materials: ["Papel", "Plástico", "Vidro"]
+                },
+                {
+                    position: { lat: -23.5502, lng: -46.6349 },
+                    type: "coop",
+                    title: "Cooperativa Eco Paulista",
+                    address: "Rua da Consolação, 1000",
+                    materials: ["Papelão", "Alumínio", "Eletrônicos"]
+                },
+
+                //Novas loc
+            
+                {
+    position: { lat: -23.6553, lng: -46.7136 },
+    type: "ecopoint",
+    title: "Ecoponto Santo Amaro",
+    address: "Rua da Paz, 1000 – Santo Amaro",
+    materials: ['Entulho', 'Móveis', 'Recicláveis', 'Restos de poda']
+  },
+  {
+    position: { lat: -23.5528, lng: -46.5921 },
+    type: "ecopoint",
+    title: "Ecoponto Mooca",
+    address: "Rua dos Trilhos, 1200 – Mooca",
+    materials: ['Entulho', 'Recicláveis', 'Móveis']
+  },
+  {
+    position: { lat: -23.5243, lng: -46.6894 },
+    type: "ecopoint",
+    title: "Ecoponto Lapa",
+    address: "Rua Guaicurus, 1500 – Lapa",
+    materials: ['Entulho', 'Recicláveis', 'Móveis']
+  },
+  {
+    position: { lat: -23.5953, lng: -46.6351 },
+    type: "ecopoint",
+    title: "Ecoponto Vila Mariana",
+    address: "Rua Domingos de Morais, 2000 – Vila Mariana",
+    materials: ['Entulho', 'Recicláveis', 'Móveis']
+  },
+  {
+    position: { lat: -23.5397, lng: -46.4645 },
+    type: "ecopoint",
+    title: "Ecoponto Itaquera",
+    address: "Avenida Itaquera, 3500 – Itaquera",
+    materials: ['Entulho', 'Recicláveis', 'Móveis']
+  },
+  {
+    position: { lat: -23.6943, lng: -46.6936 },
+    type: "coop",
+    title: "Coopercaps",
+    address: "Rua Augusto Calheiros, 300 – Capela do Socorro",
+    materials: ['Papel', 'Plástico', 'Metal', 'Vidro']
+  },
+  {
+    position: { lat: -23.3972, lng: -46.7465 },
+    type: "coop",
+    title: "Cooperativa Crescer",
+    address: "Rua Professor Affonso José Fioravanti, 210 – Jaraguá",
+    materials: ['Papel', 'Plástico', 'Metal', 'Vidro']
+  },
+  {
+    position: { lat: -23.5334, lng: -46.4627 },
+    type: "coop",
+    title: "Cooperativa União de Itaquera",
+    address: "Rua José Figliolini, 475 – Itaquera",
+    materials: ['Papel', 'Plástico', 'Metal', 'Vidro']
+  },
+  {
+    position: { lat: -23.5762, lng: -46.7321 },
+    type: "coop",
+    title: "Cooperativa Recicla Butantã",
+    address: "Rua Nella Murari Rosa, 40 – Vila Albano",
+    materials: ['Papel', 'Plástico', 'Metal', 'Vidro']
+  },
+  {
+    position: { lat: -23.5105, lng: -46.6683 },
+    type: "coop",
+    title: "Cooperativa Coopermiti",
+    address: "Rua João Rudge, 366 – Casa Verde",
+    materials: ['Papel', 'Plástico', 'Metal', 'Vidro']
+  },
+  {
+    position: { lat: -23.6265, lng: -46.7354 },
+    type: "ecopoint",
+    title: "Ecoponto Vila das Belezas",
+    address: "Rua Campo Novo do Sul, s/n – Vila Andrade",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.6331, lng: -46.7326 },
+    type: "ecopoint",
+    title: "Ecoponto Paraisópolis",
+    address: "Rua Irapará, 73 – Paraíso do Morumbi",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.6662, lng: -46.7067 },
+    type: "ecopoint",
+    title: "Ecoponto Cidade Saudável",
+    address: "Rua Ptolomeu, 869 – Vila Socorro",
+    materials: ["Entulho", "Móveis", "Recicláveis", "Restos de poda"]
+  },
+  {
+    position: { lat: -23.4943, lng: -46.6595 },
+    type: "ecopoint",
+    title: "Ecoponto Parque Peruche",
+    address: "Avenida Engenheiro Caetano Álvares, 3142 – Parque Peruche",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4708, lng: -46.6622 },
+    type: "ecopoint",
+    title: "Ecoponto Vila Nova Cachoeirinha",
+    address: "Rua Félix Alves Pereira, 113 – Jardim Centenário",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4735, lng: -46.7298 },
+    type: "ecopoint",
+    title: "Ecoponto Jardim Antártica",
+    address: "Rua Dom Aquino, 103 – Jardim Antártica",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5013, lng: -46.6914 },
+    type: "ecopoint",
+    title: "Ecoponto São Leandro",
+    address: "Rua São Leandro, 13 – Vila Palmeiras",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.7361, lng: -46.6928 },
+    type: "ecopoint",
+    title: "Ecoponto Alvarenga",
+    address: "Estrada do Alvarenga, 2475 – Balneário Mar Paulista",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.6706, lng: -46.6538 },
+    type: "ecopoint",
+    title: "Ecoponto Cupecê",
+    address: "Rua Anália Maria de Jesus, 130 – Jardim Itacolomi",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5117, lng: -46.4702 },
+    type: "ecopoint",
+    title: "Ecoponto Nascer do Sol",
+    address: "Rua Nascer do Sol, 356 – Santa Etelvina II",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5179, lng: -46.4752 },
+    type: "ecopoint",
+    title: "Ecoponto Setor G",
+    address: "Rua Alfonso Asturaro, 600 – Barro Branco II",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5416, lng: -46.4085 },
+    type: "ecopoint",
+    title: "Ecoponto Inácio Monteiro",
+    address: "Rua Regresso Feliz, 1190 – Inácio Monteiro",
+    materials: ["Entulho", "Móveis", "Recicláveis", "Gesso"]
+  },
+  {
+    position: { lat: -23.5174, lng: -46.4233 },
+    type: "ecopoint",
+    title: "Ecoponto Jardim São Nicolau",
+    address: "Rua Agreste de Itabaiana, 590 – Vila União",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5049, lng: -46.4991 },
+    type: "ecopoint",
+    title: "Ecoponto Boturussu",
+    address: "Rua Nélio Batista Guimarães, 183 – Parque Boturussu",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4603, lng: -46.6919 },
+    type: "ecopoint",
+    title: "Ecoponto Bandeirantes",
+    address: "Rua Itaiquara, 237 – Itaberaba",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5022, lng: -46.6853 },
+    type: "ecopoint",
+    title: "Ecoponto Freguesia do Ó",
+    address: "Rua Sousa Filho, 690 – Vila União",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4503, lng: -46.7301 },
+    type: "ecopoint",
+    title: "Ecoponto Vila Rica",
+    address: "Rua Jorge Mamede da Silva, 200 – Vila Souza",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4874, lng: -46.4016 },
+    type: "ecopoint",
+    title: "Ecoponto Jardim São Paulo",
+    address: "Rua Utaro Kanai, 374 – Juscelino Kubitschek",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5097, lng: -46.4147 },
+    type: "ecopoint",
+    title: "Ecoponto Guaiaponto",
+    address: "Rua da Passagem Funda, 250 – Vila Santa Cruz",
+    materials: ["Entulho", "Móveis", "Recicláveis", "Gesso"]
+  },
+  {
+    position: { lat: -23.5136, lng: -46.4262 },
+    type: "ecopoint",
+    title: "Ecoponto Lajeado",
+    address: "Rua Isabela, 405 – Jardim Lajeado",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.4972, lng: -46.4497 },
+    type: "ecopoint",
+    title: "Ecoponto Padre Nildo do Amaral",
+    address: "Rua Padre Nildo do Amaral Júnior, 900 – Vila Nova Curuçá",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5799, lng: -46.6214 },
+    type: "ecopoint",
+    title: "Ecoponto Tereza Cristina",
+    address: "Rua Tereza Cristina, 10 – Vila Monumento",
+    materials: ["Entulho", "Móveis", "Recicláveis", "Gesso"]
+  },
+  {
+    position: { lat: -23.5959, lng: -46.6355 },
+    type: "ecopoint",
+    title: "Ecoponto Santa Cruz",
+    address: "Rua Santa Cruz, 1452 – Vila Mariana",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.6376, lng: -46.6246 },
+    type: "ecopoint",
+    title: "Ecoponto Vila das Mercês",
+    address: "Rua Italva, 86 – Saúde",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.5825, lng: -46.6109 },
+    type: "ecopoint",
+    title: "Ecoponto Comandante Taylor",
+    address: "Rua Comandante Taylor, 690 – Ipiranga",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  },
+  {
+    position: { lat: -23.6882, lng: -46.7457 },
+    type: "ecopoint",
+    title: "Ecoponto Moreira",
+    address: "Rua João Batista de Godói, 1164 – Jardim das Oliveiras",
+    materials: ["Entulho", "Móveis", "Recicláveis"]
+  }
+];
+
+            ;
+            
+            // Add markers to map
+            const markers = locations.map(location => {
+                let icon;
+                
+                switch(location.type) {
+                    case "collect":
+                        icon = {
+                            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        };
+                        break;
+                    case "coop":
+                        icon = {
+                            url: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                        };
+                        break;
+                    case "ecopoint":
+                        icon = {
+                            url: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                        };
+                        break;
+                    default:
+                        icon = {
+                            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                        };
+                }
+                
+                const marker = new google.maps.Marker({
+                    position: location.position,
+                    map: map,
+                    icon: icon,
+                    title: location.title
+                });
+                
+                // Add info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="p-2">
+                            <h3 class="font-bold text-lg">${location.title}</h3>
+                            <p class="text-gray-600">${location.address}</p>
+                            <div class="mt-2">
+                                <p class="font-medium">Materiais aceitos:</p>
+                                <ul class="list-disc list-inside">
+                                    ${location.materials.map(m => `<li>${m}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                });
+                
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+                
+                return marker;
+            });
+            
+            // Filter buttons functionality
+            document.getElementById('filter-all').addEventListener('click', () => {
+                markers.forEach(marker => marker.setMap(map));
+            });
+            
+            document.getElementById('filter-collect').addEventListener('click', () => {
+                markers.forEach((marker, index) => {
+                    if (locations[index].type === 'collect') {
+                        marker.setMap(map);
+                    } else {
+                        marker.setMap(null);
+                    }
+                });
+            });
+            
+            document.getElementById('filter-coop').addEventListener('click', () => {
+                markers.forEach((marker, index) => {
+                    if (locations[index].type === 'coop') {
+                        marker.setMap(map);
+                    } else {
+                        marker.setMap(null);
+                    }
+                });
+            });
+            
+            document.getElementById('filter-ecopoint').addEventListener('click', () => {
+                markers.forEach((marker, index) => {
+                    if (locations[index].type === 'ecopoint') {
+                        marker.setMap(map);
+                    } else {
+                        marker.setMap(null);
+                    }
+                });
+            });
+        }
+        
+        function handleLocationError(browserHasGeolocation, pos) {
+            // In a real app, you might show an error message to the user
+            console.log(browserHasGeolocation ?
+                "Erro: O serviço de geolocalização falhou." :
+                "Erro: Seu navegador não suporta geolocalização.");
+        }
+        
+        // Load Google Maps API
+        function loadGoogleMaps() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD8w6dMyp2HjOxeySeT7tvzoPL-lpfzUQM&callback=initMap`;
+            script.defer = true;
+            script.async = true;
+            document.head.appendChild(script);
+        }
+        
+        // Initialize the map when the page loads
+        window.initMap = initMap;
+        window.addEventListener('DOMContentLoaded', loadGoogleMaps);
+    </script>
+</body>
+</html>
