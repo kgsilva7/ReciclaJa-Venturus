@@ -1,6 +1,6 @@
 # ♻️ ReciclaJá - Plataforma Inteligente de Reciclagem
 
-Este projeto é uma API backend para um sistema de autenticação de usuários que faz parte do projeto **ReciclaJá**, uma solução tecnológica para conectar geradores de resíduos recicláveis a coletores especializados, ajudando a aumentar as taxas de reciclagem no Brasil.
+Este projeto é uma API Back-end para um sistema de autenticação de usuários que faz parte do projeto **ReciclaJá**, uma solução tecnológica para conectar geradores de resíduos recicláveis a coletores especializados, ajudando a aumentar as taxas de reciclagem no Brasil.
 O sistema oferece cadastro, login e autenticação por token JWT, e integra com um banco de dados MySQL para armazenar os usuários.
 ---
 ## 🌟 Funcionalidades
