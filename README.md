@@ -1,9 +1,9 @@
-# ♻️ ReciclaJá - Plataforma Inteligente de Reciclagem
+# ReciclaJá - Plataforma Inteligente de Reciclagem
 
 Este projeto é uma API Back-end para um sistema de autenticação de usuários que faz parte do projeto **ReciclaJá**, uma solução tecnológica para conectar geradores de resíduos recicláveis a coletores especializados, ajudando a aumentar as taxas de reciclagem no Brasil.
 O sistema oferece cadastro, login e autenticação por token JWT, e integra com um banco de dados MySQL para armazenar os usuários.
 ---
-## 🌟 Funcionalidades
+## Funcionalidades
 - Cadastro de usuário com nome, email e senha criptografada
 - Login com autenticação segura e geração de token JWT
 - Proteção de rotas usando middleware JWT
@@ -11,7 +11,7 @@ O sistema oferece cadastro, login e autenticação por token JWT, e integra com 
 - Frontend simples em HTML/CSS com Tailwind para teste das funcionalidades
 - Documentação de API pronta para Swagger
 ---
-## 💻 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 - **Node.js** → Runtime JavaScript no backend
 - **Express.js** → Framework web para criar a API e gerenciar rotas
 - **Sequelize** → ORM para interagir com MySQL de forma simples e segura
@@ -22,7 +22,7 @@ O sistema oferece cadastro, login e autenticação por token JWT, e integra com 
 - **Tailwind CSS** → Estilização rápida e responsiva no frontend
 - **FontAwesome** → Ícones na interface
 ---
-## 📁 Estrutura dos Arquivos
+## Estrutura dos Arquivos
 | Arquivo           | Função                                                                                      |
 |-------------------|---------------------------------------------------------------------------------------------|
 | `.env`           | Guarda variáveis sensíveis, como `DATABASE_URL` e `JWT_SECRET`                              |
@@ -37,7 +37,7 @@ O sistema oferece cadastro, login e autenticação por token JWT, e integra com 
 | `package-lock.json` | Guarda versões exatas das dependências para garantir instalações consistentes           |
 
 ---
-## ⚙️ O que cada tecnologia faz
+## O que cada tecnologia faz
 - **Express** → Gerencia as rotas, middlewares e respostas HTTP.
 - **Sequelize** → Define os modelos de banco de dados e executa consultas SQL de forma simplificada.
 - **bcrypt** → Faz hash das senhas ao salvar no banco e compara hashes no login.
@@ -46,7 +46,7 @@ O sistema oferece cadastro, login e autenticação por token JWT, e integra com 
 - **Tailwind CSS** → Proporciona estilização rápida e responsiva no HTML.
 - **FontAwesome** → Adiciona ícones bonitos e funcionais à interface.
 ---
-## 🚀 Como rodar o projeto
+## Como rodar o projeto
 1. **Clone o repositório**
     ```bash
     git clone https://github.com/seu-usuario/reciclaja-backend.git
@@ -70,13 +70,13 @@ O sistema oferece cadastro, login e autenticação por token JWT, e integra com 
     npm run dev
     ```
 ---
-## 📢 Endpoints principais
+## Endpoints principais
 - `POST /api/auth/register` → Cadastra novo usuário
 - `POST /api/auth/login` → Faz login e retorna token JWT
 - `GET /api/auth/user` → Retorna lista de usuários (rota protegida)
 ---
-## 📃 Licença
+## Licença
 Este projeto está licenciado sob a licença MIT.
 ---
-## ✨ Demonstração
+## Demonstração
 Acesse a interface web no `index.html` e teste a API localmente em `http://localhost:3000`.
